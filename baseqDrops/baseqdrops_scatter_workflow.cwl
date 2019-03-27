@@ -62,8 +62,8 @@ steps:
      fileName: get-fv/query_result
   out:
   - specIds
-  - mate1files
-  - mate2files
+  - mate1ids
+  - mate2ids
 
 - id: baseqdrop_workflow
   run: steps/baseqdrops.cwl
