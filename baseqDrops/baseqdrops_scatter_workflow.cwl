@@ -33,21 +33,6 @@ requirements:
 
 steps:
 
-- id: download_index
-  run: https://raw.githubusercontent.com/Sage-Bionetworks/synapse-client-cwl-tools/master/synapse-get-tool.cwl
-  in:
-    synapseid: index_id
-    synapse_config: synapse_config
-  out: 
-  - filepath  
-
-- id: untar_index
-  run: steps/untar.cwl
-  in:
-    tar_file: download_index/filepath
-  out: 
-  - dir
-
 - id: get-fv
   run: https://raw.githubusercontent.com/Sage-Bionetworks/synapse-client-cwl-tools/master/synapse-query-tool.cwl
   in:
@@ -64,6 +49,21 @@ steps:
   - names
   - mate1_id_arrays
   - mate2_id_arrays
+
+- id: download_index
+  run: https://raw.githubusercontent.com/Sage-Bionetworks/synapse-client-cwl-tools/master/synapse-get-tool.cwl
+  in:
+    synapseid: index_id
+    synapse_config: synapse_config
+  out: 
+  - filepath  
+
+- id: untar_index
+  run: steps/untar.cwl
+  in:
+    tar_file: download_index/filepath
+  out: 
+  - dir
 
 - id: baseqdrop_workflow
   run: baseqdrops_workflow.cwl

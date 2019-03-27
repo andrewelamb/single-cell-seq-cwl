@@ -24,6 +24,8 @@ requirements:
          query_tsv=sys.argv[1]
          group_by_column=sys.argv[2]
          res = pd.read_csv(query_tsv,delimiter='\t')
+         print(group_by_column)
+         print(res)
          gdf = res.groupby(group_by_column)
          names = []
          mate1ids = []
