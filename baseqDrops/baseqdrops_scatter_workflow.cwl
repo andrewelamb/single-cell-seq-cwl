@@ -57,7 +57,7 @@ steps:
   - query_result
 
 - id: get-samples-from-fv
-  run: https://raw.githubusercontent.com/sgosline/NEXUS/master/bin/rna-seq-workflow/steps/breakdownfile-tool.cwl
+  run: steps/breakdown.cwl
   in:
      fileName: get-fv/query_result
   out:
@@ -66,18 +66,19 @@ steps:
   - mate2ids
 
 - id: baseqdrop_workflow
-  run: steps/baseqdrops.cwl
+  run: baseqdrops_workflow.cwl
   in:
+    p1_fastq_id: get-samples-from-fv/mate1ids
+    p2_fastq_id: get-samples-from-fv/mate2ids
     index_dir: untar_index/dir
     sample_name: get-samples-from-fv/specIds
-    fastq1: get-samples-from-fv/mate1files
-    fastq2: get-samples-from-fv/mate2files
+    synapse_config: synapse_config
     reference_genome: reference_genome
     protocol: protocol
   scatter:
   - sample_name
-  - fastq1
-  - fastq2
+  - p1_fastq_id
+  - p2_fastq_id
   scatterMethod: dotproduct 
   out:
   - umi_file
