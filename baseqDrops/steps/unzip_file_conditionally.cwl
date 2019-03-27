@@ -46,7 +46,7 @@ requirements:
 
 inputs:
 
-- id: file
+- id: zipped_file
   type: File
   inputBinding:
     prefix: --file

@@ -4,10 +4,13 @@
 cwlVersion: v1.0
 class: Workflow
 
+requirements:
+  - class: ScatterFeatureRequirement
+
 inputs:
 
-  p1_fastq_id: string
-  p2_fastq_id: string
+  p1_fastq_ids: string[]
+  p2_fastq_ids: string[]
   index_dir: Directory
   sample_name: string
   synapse_config: File
@@ -15,11 +18,6 @@ inputs:
   protocol: string?
 
 outputs:
-
-- id: baseqdrops_dir
-  type: Directory
-  outputSource: 
-  - baseqdrops/baseqdrops_dir
 
 - id: reads_file 
   type: File
@@ -34,47 +32,64 @@ outputs:
 
 steps:
 
-- id: download_p1_fastq
+- id: download_p1_fastqs
   run: https://raw.githubusercontent.com/Sage-Bionetworks/synapse-client-cwl-tools/master/synapse-get-tool.cwl
+  scatter: synapseid
   in:
-    synapseid: p1_fastq_id
+    synapseid: p1_fastq_ids
     synapse_config: synapse_config
   out:
   - filepath
+  
+- id: unzip_p1_fastqs
+  run: steps/unzip_file_conditionally.cwl
+  scatter: zipped_file
+  in:
+    zipped_file: download_p1_fastqs/filepath
+  out: 
+  - unziped_file
+  
+- id: cat_p1_fastqs
+  run: steps/cat.cwl
+  in:
+    files: unzip_p1_fastqs/unziped_file
+  out: 
+  - file
 
-- id: download_p2_fastq
+- id: download_p2_fastqs
   run: https://raw.githubusercontent.com/Sage-Bionetworks/synapse-client-cwl-tools/master/synapse-get-tool.cwl
+  scatter: synapseid
   in:
-    synapseid: p2_fastq_id
+    synapseid: p2_fastq_ids
     synapse_config: synapse_config
-  out: 
-  - filepath
-
-- id: unzip_p1_fastq
-  run: steps/unzip_file_conditionally.cwl
-  in:
-    file: download_p1_fastq/filepath
-  out: 
-  - unziped_file
-
-- id: unzip_p2_fastq
-  run: steps/unzip_file_conditionally.cwl
-  in:
-    file: download_p2_fastq/filepath
   out:
+  - filepath
+  
+- id: unzip_p2_fastqs
+  run: steps/unzip_file_conditionally.cwl
+  scatter: zipped_file
+  in:
+    zipped_file: download_p2_fastqs/filepath
+  out: 
   - unziped_file
+  
+- id: cat_p2_fastqs
+  run: steps/cat.cwl
+  in:
+    files: unzip_p2_fastqs/unziped_file
+  out: 
+  - file
 
 - id: baseqdrops
   run: steps/baseqdrops.cwl
   in:
     index_dir: index_dir
     sample_name: sample_name
-    fastq1: unzip_p1_fastq/unziped_file
-    fastq2: unzip_p2_fastq/unziped_file
+    fastq1: cat_p1_fastqs/file
+    fastq2: cat_p2_fastqs/file
     reference_genome: reference_genome
     protocol: protocol
   out: 
-  - baseqdrops_dir
   - reads_file
   - umi_file
 

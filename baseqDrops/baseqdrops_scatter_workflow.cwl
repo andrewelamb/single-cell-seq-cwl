@@ -59,26 +59,26 @@ steps:
 - id: get-samples-from-fv
   run: steps/breakdown.cwl
   in:
-     fileName: get-fv/query_result
+     query_tsv: get-fv/query_result
   out:
-  - specIds
-  - mate1ids
-  - mate2ids
+  - names
+  - mate1_id_arrays
+  - mate2_id_arrays
 
 - id: baseqdrop_workflow
   run: baseqdrops_workflow.cwl
   in:
-    p1_fastq_id: get-samples-from-fv/mate1ids
-    p2_fastq_id: get-samples-from-fv/mate2ids
+    p1_fastq_ids: get-samples-from-fv/mate1_id_arrays
+    p2_fastq_ids: get-samples-from-fv/mate2_id_arrays
     index_dir: untar_index/dir
-    sample_name: get-samples-from-fv/specIds
+    sample_name: get-samples-from-fv/names
     synapse_config: synapse_config
     reference_genome: reference_genome
     protocol: protocol
   scatter:
   - sample_name
-  - p1_fastq_id
-  - p2_fastq_id
+  - p1_fastq_ids
+  - p2_fastq_ids
   scatterMethod: dotproduct 
   out:
   - umi_file
