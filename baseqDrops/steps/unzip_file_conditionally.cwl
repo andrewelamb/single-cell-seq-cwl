@@ -56,5 +56,5 @@ outputs:
 - id: unziped_file
   type: File
   outputBinding: 
-    glob: $(inputs.file.basename.replace(".bz2", "").replace(".gz", "").replace(".bz", ""))
+    glob: $(inputs.zipped_file.basename.replace(".bz2", "").replace(".gz", "").replace(".bz", ""))
 
